@@ -219,7 +219,7 @@ fig.update_layout(
 # --------------------------
 # 8. Speichern
 # --------------------------
-out_path = "delay_airports_routes_2.html"
+out_path = "delay_airports_routes.html"
 # out_path = "delay_airports_2.html"
 
 fig.write_html(out_path, include_plotlyjs="cdn")
@@ -255,8 +255,12 @@ with open(out_path, "w", encoding="utf-8") as f:
 # -----------------------------------------------------------------------
 
 # Git-Befehle mit Variable
+# Git-Befehle mit Variable
 run(f"git add {out_path}")
 run(f'git commit -m "Auto-update chart HTML ({out_path})"')
 run("git branch -M main")  # stellt sicher, dass der Branch 'main' heißt
-run("git push -u origin main")
+
+# Force Push, um remote immer mit lokalem Stand zu überschreiben
+run("git push origin main --force")
+
 print(os.path.abspath(out_path))

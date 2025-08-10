@@ -141,7 +141,7 @@ fig.update_layout(
     hoverlabel=dict(font=dict(family="Lexend, Arial, sans-serif"))
 )
 
-out_path = "network_predefined_turbo_3.html"
+out_path = "network_predefined_turbo.html"
 fig.write_html(out_path, include_plotlyjs="cdn")
 
 # Google-Font + globales CSS injizieren (Lexend)
@@ -165,31 +165,23 @@ print(f"[OK] HTML gespeichert: {os.path.abspath(out_path)}")
 # ==========================
 # 6) Git-Helper & Push
 # ==========================
+# Git-Befehle mit Variable
 
 
-def run(cmd: str, check: bool = True):
-    print(f"$ {cmd}")
-    return subprocess.run(cmd, shell=True, check=check)
+def run(cmd):
+    subprocess.run(cmd, shell=True, check=True)
 
 
-def in_git_repo() -> bool:
-    try:
-        subprocess.run("git rev-parse --is-inside-work-tree",
-                       shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        return True
-    except subprocess.CalledProcessError:
-        return False
+run(f"git add {out_path}")
+run(f'git commit -m "Auto-update chart HTML ({out_path})"')
+run("git branch -M main")  # stellt sicher, dass der Branch 'main' heißt
 
+# Force Push, um remote immer mit lokalem Stand zu überschreiben
+run("git push origin main --force")
 
-def rebase_in_progress() -> bool:
-    git_dir = subprocess.run("git rev-parse --git-dir", shell=True,
-                             capture_output=True, text=True)
-    if git_dir.returncode != 0:
-        return False
-    g = git_dir.stdout.strip()
-    # typische Rebase-Indikatoren
-    return any(os.path.exists(os.path.join(g, p)) for p in ["rebase-merge", "rebase-apply"])
+print(os.path.abspath(out_path))
 
+"""
 
 if in_git_repo():
     if rebase_in_progress():
@@ -223,3 +215,4 @@ else:
     print("  git branch -M main")
     print("  git remote add origin https://github.com/<USER>/<REPO>.git")
     print("  # dann Skript erneut laufen lassen")
+    """
